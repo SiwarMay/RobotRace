@@ -1,122 +1,59 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:robotrace/pages/home.dart';
+import 'package:robotrace/services/auth_services.dart';
 
-TextEditingController _emailController = TextEditingController();
-TextEditingController _passController = TextEditingController();
-bool _isPassVisible = false;
+class LoginPage extends StatelessWidget {
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
-bool _isClicked = false;
+  void handleLogin() async {
+    String email = emailController.text;
+    String password = passwordController.text;
 
-class LoginPage extends StatefulWidget {
-  @override
-  _LoginPageState createState() => _LoginPageState();
-}
+    try {
+      String token = await AuthService.login(email, password);
+      // Traitement du token de connexion
+      print('Token: $token');
+    } catch (e) {
+      // Gestion des erreurs de connexion
+      if (e.toString() == 'Mot de passe incorrect') {
+        // Mot de passe incorrect
+        print('Mot de passe incorrect');
+      } else {
+        // Autre erreur de connexion
+        print('Erreur de connexion: $e');
+      }
+    }
+  }
 
-class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-          child: SingleChildScrollView(
+      appBar: AppBar(
+        title: Text('Login'),
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
         child: Column(
           children: [
-            Container(
-                color: Colors.white,
-                margin: EdgeInsets.all(14),
-                child: TextField(
-                  controller: _emailController,
-                  decoration: InputDecoration(
-                      prefixIcon: Icon(
-                        CupertinoIcons.mail,
-                        color: Colors.blue,
-                      ),
-                      hintText: 'enter email'),
-                )),
-            Container(
-                color: Colors.white,
-                margin: EdgeInsets.all(14),
-                child: TextField(
-                  obscureText: _isPassVisible,
-                  controller: _passController,
-                  decoration: InputDecoration(
-                      suffix: TextButton(
-                          onPressed: () {
-                            setState(() {
-                              _isPassVisible = !_isPassVisible;
-                            });
-                            print(_isPassVisible);
-                          },
-                          child: Text(_isPassVisible ? 'show' : 'hide')),
-                      prefixIcon: Icon(
-                        _isPassVisible
-                            ? CupertinoIcons.lock
-                            : CupertinoIcons.lock_open,
-                        color: Colors.blue,
-                      ),
-                      hintText: 'enter email'),
-                )),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                TextButton(onPressed: () {}, child: Text('forget pass?')),
-              ],
-            ),
-            CupertinoButton(
-              child: Text(
-                'login',
-                style: TextStyle(color: Colors.red),
+            TextField(
+              controller: emailController,
+              decoration: InputDecoration(
+                labelText: 'Email',
               ),
-              onPressed: () {
-                Navigator.push(context,
-                    CupertinoPageRoute(builder: (context) => HomePAge()));
-              },
-              color: Colors.white,
             ),
-            SizedBox(
-              height: 14,
-            ),
-            CupertinoButton(
-              child: Text(
-                _isClicked ? 'off' : 'on',
-                style: TextStyle(color: Colors.red),
+            TextField(
+              controller: passwordController,
+              decoration: InputDecoration(
+                labelText: 'Password',
               ),
-              onPressed: () {
-                setState(() {
-                  _isClicked = !_isClicked;
-                });
-              },
-              color: Colors.white,
             ),
-            Row(
-              children: [
-                Expanded(
-                  flex: 2,
-                  child: Container(
-                    height: 100,
-                    color: Colors.red,
-                  ),
-                ),
-                Expanded(
-                  flex: 4,
-                  child: Container(
-                    height: 100,
-                    color: Colors.blue,
-                  ),
-                ),
-                Expanded(
-                  flex: 1,
-                  child: Container(
-                    height: 100,
-                    color: Colors.green,
-                  ),
-                ),
-              ],
-            )
+            ElevatedButton(
+              onPressed: handleLogin,
+              child: Text('Login'),
+            ),
           ],
         ),
-      )),
+      ),
     );
   }
 }

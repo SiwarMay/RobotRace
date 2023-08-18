@@ -1,31 +1,28 @@
 import express from "express";
-import cors from "cors";
+import dotenv from "dotenv";
+import morgan from "morgan";
+import mongoose from "mongoose";
+
 import mainRoutes from "./routes/index.js";
 import { errorHandler, notFound } from "./middleware/error.js";
 import db from "./config/connect.js";
-import dotenv from "dotenv";
-import morgan from "morgan";
-import mongoose from 'mongoose';
 
 dotenv.config();
 
 db();
 const app = express();
 app.use(express.json());
-app.use(cors());
 
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
 }
 
 app.use("/api", mainRoutes);
-//app.use("/maison", maisonApi);
-//app.use("/user", userApi);
 
 app.use("/getimage", express.static("./uploads"));
 
 app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "http://localhost:4200");
+  res.header("Access-Control-Allow-Origin", "http://localhost:8000");
   next();
 });
 
